@@ -1,20 +1,23 @@
-# Makefile
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra
-
-SRCS = src/main.cpp src/Person.cpp src/Student.cpp src/Professor.cpp src/Course.cpp src/Department.cpp
-OBJS = $(SRCS:.cpp=.o)
-EXEC = bin/university_system
+CXXFLAGS = -std=c++11 -Wall -I./src
+SRCDIR = src
+BINDIR = bin
+EXEC = $(BINDIR)/university_system
+SOURCES = $(wildcard $(SRCDIR)/*.cpp)
+OBJECTS = $(patsubst $(SRCDIR)/%.cpp, $(BINDIR)/%.o, $(SOURCES))
 
 all: $(EXEC)
 
-$(EXEC): $(OBJS)
-    $(CXX) $(CXXFLAGS) -o $@ $^
+$(EXEC): $(OBJECTS) | $(BINDIR)
+	$(CXX) $(CXXFLAGS) -o $@ $^
 
-%.o: %.cpp
-    $(CXX) $(CXXFLAGS) -c $< -o $@
+$(BINDIR)/%.o: $(SRCDIR)/%.cpp | $(BINDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(BINDIR):
+	mkdir -p $(BINDIR)
 
 clean:
-    rm -f $(OBJS) $(EXEC)
+	rm -rf $(BINDIR)
 
 .PHONY: all clean
